@@ -10,11 +10,17 @@ public class Movement : MonoBehaviour
     public float rotationSpeed;
     private Vector2 movementValue;
     private float lookValue;
+    private Rigidbody rb;
+
+    private bool doubleJump = false;
+    private bool isFloor = true;
 
     private void Awake()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        rb = GetComponent<Rigidbody>();
     }
 
     public void OnMove(InputValue value)
@@ -25,20 +31,40 @@ public class Movement : MonoBehaviour
     public void OnLook(InputValue value)
     {
         lookValue = value.Get<Vector2>().x * rotationSpeed;
+        if (rb.position.y <= 0.6)
+            isFloor = true;
+        else
+            isFloor = false;
     }
 
     public void OnJump(InputValue value)
     {
-        if (value.isPressed)
+        if (value.isPressed && isFloor)
         {
-            transform.Translate(0, jumpPower, 0);
+            rb.AddRelativeForce(0, jumpPower, 0);
+            isFloor = false;
+            doubleJump = true;
+        }
+    }
+
+    public void OnDoubleJump(InputValue value)
+    {
+        if (value.isPressed && doubleJump && !isFloor)
+        {
+            DoubleJump();
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(movementValue.x * Time.deltaTime, 0, movementValue.y * Time.deltaTime);
-        transform.Rotate(0, lookValue * Time.deltaTime, 0);
+        rb.AddRelativeForce(movementValue.x * Time.deltaTime, 0, movementValue.y * Time.deltaTime);
+        rb.AddRelativeTorque(0, lookValue * Time.deltaTime, 0);
+    }
+
+    void DoubleJump()
+    {
+        rb.AddRelativeForce(0, jumpPower, 0);
+        doubleJump = false;
     }
 }

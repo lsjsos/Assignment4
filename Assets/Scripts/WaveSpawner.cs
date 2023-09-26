@@ -18,8 +18,9 @@ public class WaveSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameManager.instance.AddWave(this);
         InvokeRepeating("Spawn", startTime, spawnRate);
-        Invoke("CancelInvoke", endTime);
+        Invoke("EndSpawner", endTime);
     }
 
     void Spawn()
@@ -39,5 +40,11 @@ public class WaveSpawner : MonoBehaviour
 
         Vector3 respawnPosition = originPosition + RandomPosition;
         return respawnPosition;
+    }
+
+    void EndSpawner()
+    {
+        GameManager.instance.RemoveWave(this);
+        CancelInvoke();
     }
 }
