@@ -15,17 +15,21 @@ public class Movement : MonoBehaviour
     private bool doubleJump = false;
     private bool isFloor = true;
 
+    public Animator anim;
+
     private void Awake()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
         rb = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
     }
 
     public void OnMove(InputValue value)
     {
         movementValue = value.Get<Vector2>() * speed;
+        anim.SetBool("Aiming", true);
     }
 
     public void OnLook(InputValue value)
